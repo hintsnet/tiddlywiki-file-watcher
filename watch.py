@@ -16,11 +16,27 @@ def write_content_to_file(content, filepath):
     with open(filepath, 'w', encoding='utf-8') as fh:
         return fh.write(content)
 
+type_dict = {
+    'gif' : 'image/gif',
+    'ico' : 'image/x-icon',
+    'jpeg': 'image/jpeg',
+    'jpg' : 'image/jpeg',
+    'pdf' : 'application/pdf',
+    'png' : 'image/png',
+    'svg' : 'image/svg+xml',
+    'mp4' : 'video/mp4',
+    'm4v' : 'video/mp4'
+}
+
 def generate_tiddler_content(media_file_name):
     new_tiddler_path = './files/' + media_file_name
+    file_ext = media_file_name.lower().split('.')[-1]
+    file_type = ''
+    if (file_ext in type_dict.keys()):
+        file_type = type_dict[file_ext]
     detected_time = datetime.now(timezone(timedelta(hours=8))).strftime("%Y%m%d%H%M%f")
     content =f"""_canonical_uri: {new_tiddler_path}
-type: image/png
+type: {file_type}
 created: {detected_time}
 creator: {creator}
 modified: {detected_time}
@@ -32,24 +48,13 @@ title: {media_file_name}
     return content
 
 def add_skinny_tiddler(media_file_name):
-    ext = ('.gif','.ico','.jpeg','.jpg','.pdf','.png','.svg')
+    ext = ('.gif','.ico','.jpeg','.jpg','.pdf','.png','.svg','mp4','m4v')
     if (media_file_name.lower().endswith(tuple(ext))):
         new_tiddler_path = os.path.join(path_of_tiddlers, media_file_name + ".tid")
         content = generate_tiddler_content(media_file_name)
         print(content)
         write_content_to_file(content, new_tiddler_path)
         return True
-
-action_dic = {
- 1: add_skinny_tiddler,
- 5: add_skinny_tiddler
-}
-
-def update_tiddler(media_file_name, action_name):
-    action = action_dic.get(action_name)
-    if (action_name == 1 or action_name == 5):
-        print("## ", media_file_name)
-        action(media_file_name)
 
 ACTIONS = {
   1: "被创建",
@@ -58,6 +63,17 @@ ACTIONS = {
   4: "被重命名",
   5: "重命名为"
 }
+
+action_dic = {
+ 1: add_skinny_tiddler,  # 创建文件时，要处理
+ 5: add_skinny_tiddler   # 重命名文件后，也做同样处理（只创建新 tiddler，不删除旧 tiddler）
+}
+
+def update_tiddler(media_file_name, action_name):
+    action = action_dic.get(action_name)
+    if (action_name == 1 or action_name == 5):
+        print("## ", media_file_name)
+        action(media_file_name)
 
 FILE_LIST_DIRECTORY = 0x0001
 
