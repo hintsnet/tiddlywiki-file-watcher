@@ -32,14 +32,8 @@ title: {media_file_name}
     return content
 
 def add_skinny_tiddler(media_file_name):
-    if (media_file_name.endswith('gif') or
-        media_file_name.endswith('ico') or
-        media_file_name.endswith('jpeg') or
-        media_file_name.endswith('jpg') or
-        media_file_name.endswith('pdf') or
-        media_file_name.endswith('png') or
-        media_file_name.endswith('svg')):
-																				
+    ext = ('.gif','.ico','.jpeg','.jpg','.pdf','.png','.svg')
+    if (media_file_name.lower().endswith(tuple(ext))):
         new_tiddler_path = os.path.join(path_of_tiddlers, media_file_name + ".tid")
         content = generate_tiddler_content(media_file_name)
         print(content)
